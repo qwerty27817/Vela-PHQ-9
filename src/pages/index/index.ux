@@ -1,0 +1,295 @@
+<template>
+  <div class="page">
+
+    <!-- 答题 -->
+    <div class="quiz" if="{{!done}}">
+
+      <div class="top">
+        <text class="num">{{num}}</text>
+        <text class="dots">{{dots}}</text>
+      </div>
+
+      <div class="qbox">
+        <text class="q">{{q}}</text>
+      </div>
+
+      <div class="opts">
+        <div class="opt" for="{{ops}}" onclick="pick($idx)"
+             style="background-color: {{sel === $idx ? '#0A84FF' : '#1C1C1E'}}">
+          <text class="opt-t">{{$item}}</text>
+        </div>
+      </div>
+
+      <div class="nav">
+        <div class="btn" onclick="prev"
+             style="background-color: {{qi === 0 ? '#141416' : '#2C2C2E'}}">
+          <text class="btn-t" style="color: {{qi === 0 ? '#48484A' : '#FFFFFF'}}">上一题</text>
+        </div>
+        <div class="btn" onclick="next"
+             style="background-color: {{sel < 0 ? '#141416' : '#2C2C2E'}}">
+          <text class="btn-t" style="color: {{sel < 0 ? '#48484A' : '#FFFFFF'}}">下一题</text>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 结果 -->
+    <div class="res" else>
+      <text class="lbl">总分</text>
+      <text class="score" style="color: {{lvc}}">{{total}}</text>
+      <text class="lv" style="color: {{lvc}}">{{lv}}</text>
+      <text class="tip">{{tip}}</text>
+      <text class="note">结果仅供参考，不能替代临床诊断</text>
+      <div class="btn again" onclick="again">
+        <text class="btn-t" style="color: #FFFFFF">重新测试</text>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script>
+const QS = [
+  '做事提不起劲或没有兴趣',
+  '感到心情低落、沮丧或绝望',
+  '入睡困难、睡不安稳，或睡得太多',
+  '感觉疲倦或没有活力',
+  '食欲不振，或吃得太多',
+  '觉得自己很糟或很失败，或让家人失望',
+  '注意力不集中，如看报或看电视时',
+  '动作/说话迟缓，或烦躁坐立不安',
+  '有不如死掉或伤害自己的念头'
+]
+
+const OPS = ['完全不会', '好几天', '一半以上的天数', '几乎每天']
+
+// [分数上限, 分级, 颜色, 建议]
+const LV = [
+  [4, '无抑郁', '#32D74B', '情绪状态良好，继续保持'],
+  [9, '轻度抑郁', '#FFD60A', '留意情绪变化，必要时复查'],
+  [14, '中度抑郁', '#FF9F0A', '建议咨询医生进一步评估'],
+  [19, '中重度抑郁', '#FF6B35', '建议尽快寻求专业帮助'],
+  [27, '重度抑郁', '#FF453A', '请尽快就医，寻求专业帮助']
+]
+
+export default {
+  private: {
+    ops: OPS,
+    q: QS[0],
+    qi: 0,      // 当前题号 0-8
+    sel: -1,    // 当前题的已选选项，-1 表示未选
+    ans: [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    num: '1/9',
+    dots: '○○○○○○○○○',
+    done: false,
+    total: 0,
+    lv: '',
+    lvc: '#FFFFFF',
+    tip: ''
+  },
+
+  onInit() {
+    this.sync()
+  },
+
+  // 选中选项后自动进入下一题
+  pick(i) {
+    const a = this.ans.slice()
+    a[this.qi] = i
+    this.ans = a
+    this.sel = i
+    this.next()
+  },
+
+  next() {
+    if (this.sel < 0) return          // 未作答不放行，保证 9 题都有答案
+    if (this.qi === 8) { this.show(); return }
+    this.qi++
+    this.sync()
+  },
+
+  prev() {
+    if (this.qi === 0) return
+    this.qi--
+    this.sync()
+  },
+
+  sync() {
+    let s = ''
+    for (let i = 0; i < 9; i++) s += this.ans[i] >= 0 ? '●' : '○'
+    this.dots = s
+    this.num = (this.qi + 1) + '/9'
+    this.q = QS[this.qi]
+    this.sel = this.ans[this.qi]
+  },
+
+  show() {
+    let t = 0
+    for (let i = 0; i < 9; i++) if (this.ans[i] > 0) t += this.ans[i]
+    this.total = t
+    for (let i = 0; i < LV.length; i++) {
+      if (t <= LV[i][0]) {
+        this.lv = LV[i][1]
+        this.lvc = LV[i][2]
+        this.tip = LV[i][3]
+        break
+      }
+    }
+    this.done = true
+  },
+
+  again() {
+    this.ans = [-1, -1, -1, -1, -1, -1, -1, -1, -1]
+    this.qi = 0
+    this.done = false
+    this.sync()
+  }
+}
+</script>
+
+<style>
+.page {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  background-color: #000000;
+}
+
+/* ---------- 答题 ---------- */
+
+.quiz {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top {
+  width: 340px;
+  height: 36px;
+  margin-top: 24px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.num {
+  font-size: 24px;
+  color: #8E8E93;
+}
+
+.dots {
+  font-size: 22px;
+  color: #48484A;
+}
+
+.qbox {
+  width: 340px;
+  height: 100px;
+  margin-top: 8px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.q {
+  width: 100%;
+  font-size: 28px;
+  line-height: 34px;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+/* 选项区吃掉剩余高度，屏幕越高每行越大 */
+.opts {
+  width: 340px;
+  height: 216px;
+  flex: 1;
+  margin-top: 10px;
+  flex-direction: column;
+}
+
+.opt {
+  width: 340px;
+  height: 50px;
+  flex: 1;
+  margin-bottom: 6px;
+  border-radius: 27px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.opt-t {
+  font-size: 26px;
+  color: #E5E5EA;
+}
+
+.nav {
+  width: 340px;
+  height: 44px;
+  margin-top: 6px;
+  margin-bottom: 14px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn {
+  width: 164px;
+  height: 44px;
+  border-radius: 22px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-t {
+  font-size: 24px;
+  color: #FFFFFF;
+}
+
+/* ---------- 结果 ---------- */
+
+.res {
+  width: 340px;
+  height: 100%;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.lbl {
+  font-size: 24px;
+  color: #8E8E93;
+}
+
+.score {
+  font-size: 96px;
+  font-weight: bold;
+  line-height: 104px;
+}
+
+.lv {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.tip {
+  margin-top: 14px;
+  font-size: 24px;
+  color: #C7C7CC;
+  text-align: center;
+}
+
+.note {
+  margin-top: 8px;
+  font-size: 18px;
+  color: #636366;
+}
+
+.again {
+  margin-top: 26px;
+}
+</style>

@@ -1,0 +1,17 @@
+{
+  "name": "vela-phq9",
+  "version": "1.0.0",
+  "description": "PHQ-9 抑郁筛查量表 · 小米手环 / 红米手表 Vela 快应用",
+  "engines": {
+    "node": ">=8.10"
+  },
+  "scripts": {
+    "start": "aiot start --watch",
+    "build": "aiot build",
+    "release": "aiot release"
+  },
+  "devDependencies": {
+    "@aiot-toolkit/jsc": "^1.0.3",
+    "aiot-toolkit": "^2.0.5"
+  }
+}
