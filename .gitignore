@@ -1,0 +1,76 @@
+/report.md
+.zcode
+
+# ---- 依赖 ----
+node_modules/
+jspm_packages/
+bower_components/
+
+# ---- 构建与打包输出 ----
+dist/
+build/
+out/
+*.tgz
+
+# ---- Vela JS / 快应用特有 ----
+sign/
+*.rpk
+*.rpk.map
+# 快应用预览与临时文件
+.quickapp.preview.json
+.quickapp/
+# AIoT-IDE 相关缓存 (基于 VS Code)
+.aiot-ide/
+.vscode/    # 如果使用 AIoT-IDE，建议忽略，以免提交个人配置
+
+# ---- 日志与调试 ----
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ---- 运行时数据 ----
+pids/
+*.pid
+*.seed
+*.pid.lock
+lib-cov/
+coverage/
+*.lcov
+.nyc_output/
+
+# ---- 缓存与临时文件 ----
+.cache/
+.temp/
+.tmp/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.npm/
+.node_repl_history
+.yarn-integrity
+.env
+.env.local
+.env.*.local
+
+# ---- IDE / 编辑器 ----
+.idea/
+.project
+.classpath
+.settings/
+*.launch
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+
+# ---- 操作系统 ----
+.DS_Store
+Thumbs.db
